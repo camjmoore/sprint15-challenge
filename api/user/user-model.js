@@ -2,15 +2,20 @@ const db = require('../data/db-config.js');
 
 module.exports = {
   get,
-  insert
+  getBy,
+  add
 }
 
 function get(id) {
   let query = db("user")
 
-  return id ? query.where({ id }).first() : query;
+  return id ? getBy(id) : query;
 }
 
-function insert(user) {
+function getBy(filter) {
+  return db("user").where(filter).first();
+}
+
+function add(user) {
   return db("user").insert(user).then(([id]) => get(id));
 }
