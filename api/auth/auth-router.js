@@ -1,32 +1,49 @@
 const router = require('express').Router();
+const Users = require('../user/user-model.js');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 router.post('/register', (req, res) => {
-  res.end('implement register, please!');
-  /*
-    IMPLEMENT
-    You are welcome to build additional middlewares to help with the endpoint's functionality.
-    DO NOT EXCEED 2^8 ROUNDS OF HASHING!
 
-    1- In order to register a new account the client must provide `username` and `password`:
-      {
-        "username": "Captain Marvel", // must not exist already in the `users` table
-        "password": "foobar"          // needs to be hashed before it's saved
-      }
+  // IMPLEMENT
+  // You are welcome to build additional middlewares to help with the endpoint's functionality.
+  // DO NOT EXCEED 2^8 ROUNDS OF HASHING!
+  const userCreds = req.body;
 
-    2- On SUCCESSFUL registration,
-      the response body should have `id`, `username` and `password`:
-      {
-        "id": 1,
-        "username": "Captain Marvel",
-        "password": "2a$08$jG.wIGR2S4hxuyWNcBf9MuoC4y0dNy7qC/LbmtuFBSdIhWks2LhpG"
-      }
+  const ROUNDS = process.env.BCRYPT_ROUNDS || 8;
 
-    3- On FAILED registration due to `username` or `password` missing from the request body,
-      the response body should include a string exactly as follows: "username and password required".
+  const hash = bcrypt.hashSync(userCreds.password, ROUNDS);
 
-    4- On FAILED registration due to the `username` being taken,
-      the response body should include a string exactly as follows: "username taken".
-  */
+  userCreds.password = hash;
+
+  // 1- In order to register a new account the client must provide `username` and `password`:
+  //   {
+  //     "username": "Captain Marvel", // must not exist already in the `users` table
+  //     "password": "foobar"          // needs to be hashed before it's saved
+  //   }
+
+  Users.add(userCreds)
+  .then(user => {
+    res.status(201).json(user);
+  })
+  .catch(err => {
+    res.status(500).json({ message: 'Failed to register user' });
+  })
+    
+  // 2- On SUCCESSFUL registration,
+  //   the response body should have `id`, `username` and `password`:
+  //   {
+  //     "id": 1,
+  //     "username": "Captain Marvel",
+  //     "password": "2a$08$jG.wIGR2S4hxuyWNcBf9MuoC4y0dNy7qC/LbmtuFBSdIhWks2LhpG"
+  //   }
+
+  // 3- On FAILED registration due to `username` or `password` missing from the request body,
+  //   the response body should include a string exactly as follows: "username and password required".
+
+  // 4- On FAILED registration due to the `username` being taken,
+  //   the response body should include a string exactly as follows: "username taken".
+
 });
 
 router.post('/login', (req, res) => {
