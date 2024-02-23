@@ -24,8 +24,7 @@ router.post('/register', validateUser, (req, res) => {
 });
 
 router.post('/login', (req, res) => {
-  res.end('implement login, please!');
-
+  
   const { username, password } = req.body;
 
   if (!username || !password) {
