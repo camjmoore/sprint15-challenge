@@ -19,7 +19,7 @@ router.post('/register', validateUser, (req, res) => {
       res.status(201).json(user);
     })
     .catch(err => {
-      res.status(500).json({ message: err });
+      res.status(500).end();
     })
 });
 
@@ -41,7 +41,7 @@ router.post('/login', (req, res) => {
       }
     })
     .catch(err => {
-      res.status(500).json({ message: err });
+      res.status(500).end();
     })
 });
 
