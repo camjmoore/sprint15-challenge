@@ -4,18 +4,17 @@ const generateToken = require('../middleware/generate-token.js');
 const bcrypt = require('bcryptjs');
 
 router.post('/register', (req, res) => {
-
   const userCreds = req.body;
+
+  if (!userCreds.username || !userCreds.password) {
+    res.status(400).json({ message: 'username and password required' });
+  }
 
   const ROUNDS = process.env.BCRYPT_ROUNDS || 8;
 
   const hash = bcrypt.hashSync(userCreds.password, ROUNDS);
 
   userCreds.password = hash;
-
-  if (!userCreds.username || !userCreds.password) {
-    res.status(400).json({ message: 'username and password required' });
-  }
 
   Users.getBy({username: userCreds.username})
     .then(user => {
