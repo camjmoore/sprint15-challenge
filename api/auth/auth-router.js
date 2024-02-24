@@ -1,10 +1,9 @@
 const router = require('express').Router();
 const Users = require('../user/user-model.js');
-const validateUser = require('../middleware/user-validation.js');
 const generateToken = require('../middleware/generate-token.js');
 const bcrypt = require('bcryptjs');
 
-router.post('/register', validateUser, (req, res) => {
+router.post('/register', (req, res) => {
 
   const userCreds = req.body;
 
@@ -14,13 +13,25 @@ router.post('/register', validateUser, (req, res) => {
 
   userCreds.password = hash;
 
-  Users.add(userCreds)
+  if (!userCreds.username || !userCreds.password) {
+    res.status(400).json({ message: 'username and password required' });
+  }
+
+  Users.getBy({username: userCreds.username})
     .then(user => {
-      res.status(201).json(user);
+      if (user?.username) {
+        res.status(400).json({ message: 'username taken' });
+      } else {
+        Users.add(userCreds)
+        .then(user => {
+          res.status(201).json(user);
+        })
+        .catch(err => {
+          res.status(500).json({ message: 'fucked innit?' });
+        })
+      }
     })
-    .catch(err => {
-      res.status(500).end();
-    })
+
 });
 
 router.post('/login', (req, res) => {
