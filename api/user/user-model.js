@@ -7,15 +7,18 @@ module.exports = {
 }
 
 function get(id) {
-  let query = db("user")
-
+  let query = db("users")
   return id ? getBy(id) : query;
 }
 
 function getBy(filter) {
-  return db("user").where(filter).first();
+  return db("users").where(filter).first();
+}
+
+function getById(id) {
+  return db("users").where({ id }).select("id", "username", "password").first();
 }
 
 function add(user) {
-  return db("user").insert(user).then(([id]) => getBy(id));
+  return db("users").insert(user).then(([id]) => getById(id));
 }
