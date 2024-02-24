@@ -17,5 +17,5 @@ function getBy(filter) {
 }
 
 function add(user) {
-  return db("user").insert(user).then(([id]) => get(id));
+  return db("user").insert(user).then(([id]) => getBy(id));
 }
