@@ -8,11 +8,7 @@ module.exports = {
 
 function get(id) {
   let query = db("users")
-  return id ? getBy(id) : query;
-}
-
-function getBy(filter) {
-  return db("users").where(filter).first();
+  return id ? query.where({ id }).first() : query;
 }
 
 function getById(id) {
