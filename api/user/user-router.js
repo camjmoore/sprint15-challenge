@@ -1,9 +1,9 @@
 const router = require('express').Router();
 
-const Users = require('./users-model.js');
+const Users = require('./user-model.js');
 
 router.get('/', (req, res) => {
-  Users.find()
+  Users.get()
     .then(users => {
       res.json(users);
     })
