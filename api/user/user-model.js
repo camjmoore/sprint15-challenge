@@ -12,7 +12,7 @@ function get(id) {
 }
 
 function getBy(filter) {
-  return db("users").where({ filter }).select("id", "username", "password").first();
+  return db("users").where(filter).select("id", "username", "password").first();
 }
 
 function add(user) {
