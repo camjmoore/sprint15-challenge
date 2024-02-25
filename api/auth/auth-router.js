@@ -16,7 +16,7 @@ router.post('/register', (req, res) => {
 
   userCreds.password = hash;
 
-  Users.getBy({username})
+  Users.getBy(userCreds.username)
     .then(user => {
       if (user) {
         res.status(400).json({ message: 'username taken' });
