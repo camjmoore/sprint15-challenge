@@ -8,7 +8,7 @@ router.post('/register', (req, res) => {
   const { username } = req.body;
 
   if (!userCreds.username || !userCreds.password) {
-    res.status(400).end('username and password required');
+    res.status(400).send('username and password required');
   }
 
   const ROUNDS = process.env.BCRYPT_ROUNDS || 8;
@@ -20,7 +20,7 @@ router.post('/register', (req, res) => {
   Users.getBy({username})
     .then(user => {
       if (user) {
-        res.status(400).end('username taken');
+        res.status(400).send('username taken');
       } else {
         Users.add(userCreds)
         .then(user => {
@@ -39,7 +39,7 @@ router.post('/login', (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
-    res.status(400).end('username and password required');
+    res.status(400).send('username and password required');
   }
 
   Users.getBy({ username })
@@ -48,7 +48,7 @@ router.post('/login', (req, res) => {
         const token = generateToken(user);
         res.status(200).json({ message: `welcome, ${user.username}`, token });
       } else {
-        res.status(401).end('invalid credentials');
+        res.status(401).send('invalid credentials');
       }
     })
     .catch(err => {
