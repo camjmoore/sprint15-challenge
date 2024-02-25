@@ -18,7 +18,7 @@ router.post('/register', (req, res) => {
 
   Users.getBy({username})
     .then(user => {
-      if (user?.username) {
+      if (user) {
         res.status(400).json({ message: 'username taken' });
       } else {
         Users.add(userCreds)
