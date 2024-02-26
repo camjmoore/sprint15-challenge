@@ -17,7 +17,7 @@ router.post("/register", (req, res) => {
 
   userCreds.password = hash;
 
-  Users.getByUserName({ username }).then((user) => {
+  Users.getByUserName(username).then((user) => {
     if (user) {
       res.status(400).send({ message: "username taken" });
     } else {
@@ -39,7 +39,7 @@ router.post("/login", (req, res) => {
     res.status(400).send({ message: "username and password required" });
   }
 
-  Users.getByUserName({ username })
+  Users.getByUserName(username)
     .then((user) => {
       if (user && bcrypt.compareSync(password, user.password)) {
         const token = generateToken(user);
