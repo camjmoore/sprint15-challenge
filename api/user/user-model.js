@@ -1,13 +1,13 @@
-const db = require('../../data/dbConfig.js');
+const db = require("../../data/dbConfig.js");
 
 module.exports = {
   get,
   getBy,
-  add
-}
+  add,
+};
 
 function get(id) {
-  let query = db("users")
+  let query = db("users");
   return id ? query.where({ id }).first() : query;
 }
 
@@ -16,5 +16,7 @@ function getBy(filter) {
 }
 
 function add(user) {
-  return db("users").insert(user).then(([id]) => get(id));
+  return db("users")
+    .insert(user)
+    .then(([id]) => get(id));
 }
