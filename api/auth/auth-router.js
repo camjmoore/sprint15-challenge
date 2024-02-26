@@ -1,14 +1,14 @@
-const router = require('express').Router();
-const Users = require('../user/user-model.js');
-const generateToken = require('../middleware/generate-token.js');
-const bcrypt = require('bcryptjs');
+const router = require("express").Router();
+const Users = require("../user/user-model.js");
+const generateToken = require("../middleware/generate-token.js");
+const bcrypt = require("bcryptjs");
 
-router.post('/register', (req, res) => {
+router.post("/register", (req, res) => {
   const userCreds = req.body;
   const { username } = req.body;
 
   if (!userCreds.username || !userCreds.password) {
-    res.status(400).send('username and password required');
+    res.status(400).send({ message: "username and password required" });
   }
 
   const ROUNDS = process.env.BCRYPT_ROUNDS || 8;
@@ -17,43 +17,42 @@ router.post('/register', (req, res) => {
 
   userCreds.password = hash;
 
-  Users.getBy({username})
-    .then(user => {
-      if (user) {
-        res.status(400).send('username taken');
-      } else {
-        Users.add(userCreds)
-        .then(user => {
+  Users.getBy({ username }).then((user) => {
+    if (user) {
+      res.status(400).send({ message: "username taken" });
+    } else {
+      Users.add(userCreds)
+        .then((user) => {
           res.status(201).json(user);
         })
-        .catch(err => {
+        .catch((err) => {
           res.status(500).end();
-        })
-      }
-    })
-
+        });
+    }
+  });
 });
 
-router.post('/login', (req, res) => {
-  
+router.post("/login", (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
-    res.status(400).send('username and password required');
+    res.status(400).send({ message: "username and password required" });
   }
 
   Users.getBy({ username })
-    .then(user => {
+    .then((user) => {
       if (user && bcrypt.compareSync(password, user.password)) {
         const token = generateToken(user);
-        res.status(200).json({ message: `welcome, ${user.username}`, token });
+        res
+          .status(200)
+          .json({ message: `welcome, ${user.username}`, token: token });
       } else {
-        res.status(401).send('invalid credentials');
+        res.status(401).send({ message: "invalid credentials" });
       }
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).end();
-    })
+    });
 });
 
 module.exports = router;
