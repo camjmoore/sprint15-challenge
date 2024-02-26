@@ -12,7 +12,7 @@ function get(id) {
 }
 
 function getByUserName(username) {
-  return db("users").where({ username }).first();
+  return db("users").where("username", username).first();
 }
 
 function add(user) {
