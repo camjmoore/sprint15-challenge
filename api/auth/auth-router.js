@@ -13,7 +13,7 @@ router.post("/register", (req, res) => {
   userCreds.password = hash;
 
   if (!userCreds.username || !userCreds.password) {
-    res.status(400).send({ message: "username and password required" });
+    return res.status(400).send({ message: "username and password required" });
   } else {
     Users.getByUserName(userCreds.username).then((user) => {
       if (user?.username) {
