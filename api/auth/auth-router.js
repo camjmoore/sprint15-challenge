@@ -1,9 +1,10 @@
 const router = require("express").Router();
 const Users = require("../user/user-model.js");
+const userValidation = require("../middleware/user-validation.js");
 const generateToken = require("../middleware/generate-token.js");
 const bcrypt = require("bcryptjs");
 
-router.post("/register", (req, res) => {
+router.post("/register", userValidation, (req, res) => {
   const userCreds = req.body;
 
   const ROUNDS = process.env.BCRYPT_ROUNDS || 8;
@@ -12,23 +13,19 @@ router.post("/register", (req, res) => {
 
   userCreds.password = hash;
 
-  if (!userCreds.username || !userCreds.password) {
-    return res.status(400).send({ message: "username and password required" });
-  } else {
-    Users.getByUserName(userCreds.username).then((user) => {
-      if (user?.username) {
-        res.status(400).send({ message: "username taken" });
-      } else {
-        Users.add(userCreds)
-          .then((user) => {
-            res.status(201).json(user);
-          })
-          .catch((err) => {
-            res.status(500).send({ message: "this user was not added" });
-          });
-      }
-    });
-  }
+  Users.getByUserName(userCreds.username).then((user) => {
+    if (user?.username) {
+      res.status(400).send({ message: "username taken" });
+    } else {
+      Users.add(userCreds)
+        .then((user) => {
+          res.status(201).json(user);
+        })
+        .catch((err) => {
+          res.status(500).send({ message: "this user was not added" });
+        });
+    }
+  });
 });
 
 router.post("/login", (req, res) => {
