@@ -6,29 +6,29 @@ const bcrypt = require("bcryptjs");
 router.post("/register", (req, res) => {
   const userCreds = req.body;
 
-  if (!userCreds.username || !userCreds.password) {
-    res.status(400).send({ message: "username and password required" });
-  }
-
   const ROUNDS = process.env.BCRYPT_ROUNDS || 8;
 
   const hash = bcrypt.hashSync(userCreds.password, ROUNDS);
 
   userCreds.password = hash;
 
-  Users.getByUserName(userCreds.username).then((user) => {
-    if (user) {
-      res.status(400).send({ message: "username taken" });
-    } else {
-      Users.add(userCreds)
-        .then((user) => {
-          res.status(201).json(user);
-        })
-        .catch((err) => {
-          res.status(500).end();
-        });
-    }
-  });
+  if (!userCreds.username || !userCreds.password) {
+    res.status(400).send({ message: "username and password required" });
+  } else {
+    Users.getByUserName(userCreds.username).then((user) => {
+      if (user.username) {
+        res.status(400).send({ message: "username taken" });
+      } else {
+        Users.add(userCreds)
+          .then((user) => {
+            res.status(201).json(user);
+          })
+          .catch((err) => {
+            res.status(500).end();
+          });
+      }
+    });
+  }
 });
 
 router.post("/login", (req, res) => {
@@ -36,22 +36,20 @@ router.post("/login", (req, res) => {
 
   if (!username || !password) {
     res.status(400).send({ message: "username and password required" });
+  } else {
+    Users.getByUserName(username)
+      .then((user) => {
+        if (user && bcrypt.compareSync(password, user.password)) {
+          const token = generateToken(user);
+          res.status(200).json({ message: `welcome, ${user.username}`, token });
+        } else {
+          res.status(401).send({ message: "invalid credentials" });
+        }
+      })
+      .catch((err) => {
+        res.status(500).end();
+      });
   }
-
-  Users.getByUserName(username)
-    .then((user) => {
-      if (user && bcrypt.compareSync(password, user.password)) {
-        const token = generateToken(user);
-        res
-          .status(200)
-          .json({ message: `welcome, ${user.username}`, token: token });
-      } else {
-        res.status(401).send({ message: "invalid credentials" });
-      }
-    })
-    .catch((err) => {
-      res.status(500).end();
-    });
 });
 
 module.exports = router;

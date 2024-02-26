@@ -2,7 +2,7 @@ const db = require("../../data/dbConfig.js");
 
 module.exports = {
   get,
-  getBy,
+  getByUserName,
   add,
 };
 
@@ -11,11 +11,8 @@ function get(id) {
   return id ? query.where({ id }).first() : query;
 }
 
-function getBy(filter) {
-  return db("users")
-    .where({ filter })
-    .select("id", "username", "password")
-    .first();
+function getByUserName(username) {
+  return db("users").where({ username }).first();
 }
 
 function add(user) {
