@@ -16,7 +16,7 @@ router.post("/register", (req, res) => {
     res.status(400).send({ message: "username and password required" });
   } else {
     Users.getByUserName(userCreds.username).then((user) => {
-      if (user.username) {
+      if (user?.username) {
         res.status(400).send({ message: "username taken" });
       } else {
         Users.add(userCreds)
