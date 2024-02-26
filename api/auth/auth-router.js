@@ -24,7 +24,7 @@ router.post("/register", (req, res) => {
             res.status(201).json(user);
           })
           .catch((err) => {
-            res.status(500).end();
+            res.status(500).send({ message: "this user was not added" });
           });
       }
     });
