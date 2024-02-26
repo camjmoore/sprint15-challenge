@@ -5,7 +5,6 @@ const bcrypt = require("bcryptjs");
 
 router.post("/register", (req, res) => {
   const userCreds = req.body;
-  const { username } = req.body;
 
   if (!userCreds.username || !userCreds.password) {
     res.status(400).send({ message: "username and password required" });
@@ -17,7 +16,7 @@ router.post("/register", (req, res) => {
 
   userCreds.password = hash;
 
-  Users.getByUserName(username).then((user) => {
+  Users.getByUserName(userCreds.username).then((user) => {
     if (user) {
       res.status(400).send({ message: "username taken" });
     } else {
